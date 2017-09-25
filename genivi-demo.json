@@ -1,0 +1,110 @@
+{
+  "vehicle": {
+    "type": "branch", 
+    "children": {
+      "engine": {
+        "description": "engine signals", 
+        "type": "branch", 
+        "children": {
+          "oilpressure": {
+            "description": "engine oil pressure in psi", 
+            "min": 0, 
+            "max": 160, 
+            "can": "<can db entry>", 
+            "type": "UInt16", 
+            "id": 9
+          }, 
+          "rpm": {
+            "description": "engine rpm x 1000", 
+            "min": 0, 
+            "max": 10, 
+            "can": "<can db entry>", 
+            "type": "UInt16", 
+            "id": 7
+          }, 
+          "temperature": {
+            "description": "engine coolant temperature in degree C", 
+            "min": 0, 
+            "max": 120, 
+            "can": "<can db entry>", 
+            "type": "UInt16", 
+            "id": 8
+          }
+        }
+      }, 
+      "turnsignal": {
+        "type": "branch", 
+        "children": {
+          "right": {
+            "type": "Boolean", 
+            "description": "right turn sigal", 
+            "id": 3, 
+            "can": "<can db entry>"
+          }, 
+          "left": {
+            "type": "Boolean", 
+            "description": "left turn signal", 
+            "id": 2, 
+            "can": "<can db entry>"
+          }
+        }, 
+        "description": "turn signals"
+      }, 
+      "battery": {
+        "description": "battery voltage in V", 
+        "min": 10, 
+        "max": 14, 
+        "can": "<can db entry>", 
+        "type": "UInt8", 
+        "id": 6
+      }, 
+      "transmission": {
+        "description": "transmission signals", 
+        "type": "branch", 
+        "children": {
+          "gear": {
+            "type": "String", 
+            "description": "gear setting", 
+            "enum": [
+              "park", 
+              "reverse", 
+              "neutral", 
+              "drive"
+            ], 
+            "id": 10, 
+            "can": "<can db entry>"
+          }
+        }
+      }, 
+      "ignition": {
+        "type": "String", 
+        "description": "ignition status", 
+        "enum": [
+          "off", 
+          "accessory", 
+          "on", 
+          "start"
+        ], 
+        "id": 1, 
+        "can": "<can db entry>"
+      }, 
+      "fuel": {
+        "description": "fuel level as percentage", 
+        "min": 0, 
+        "max": 100, 
+        "can": "<can db entry>", 
+        "type": "UInt8", 
+        "id": 5
+      }, 
+      "speed": {
+        "description": "vehicle speed", 
+        "min": 0, 
+        "max": 220, 
+        "can": "<can db entry>", 
+        "type": "UInt16", 
+        "id": 4
+      }
+    }, 
+    "description": "highlevel vehicle data"
+  }
+}

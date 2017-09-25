@@ -1,0 +1,11 @@
+unspecified version
+vehicle.engine.oilpressure 9
+vehicle.engine.rpm 7
+vehicle.engine.temperature 8
+vehicle.turnsignal.right 3
+vehicle.turnsignal.left 2
+vehicle.battery 6
+vehicle.transmission.gear 10
+vehicle.ignition 1
+vehicle.fuel 5
+vehicle.speed 4

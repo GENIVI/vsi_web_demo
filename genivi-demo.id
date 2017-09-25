@@ -1,0 +1,10 @@
+vehicle.battery: 6
+vehicle.engine.oilpressure: 9
+vehicle.engine.rpm: 7
+vehicle.engine.temperature: 8
+vehicle.fuel: 5
+vehicle.ignition: 1
+vehicle.speed: 4
+vehicle.transmission.gear: 10
+vehicle.turnsignal.left: 2
+vehicle.turnsignal.right: 3

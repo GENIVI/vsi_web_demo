@@ -1,0 +1,90 @@
+#
+# (C) 2017 GENIVI (www.genivi.org)
+#
+# License:  Your choice of:
+#           MPLv2 (default for this demo repository) 
+#           or
+#           MIT (default for open VSS specification)
+#
+ 
+- vehicle:
+  type: branch
+  description: highlevel vehicle data
+
+- vehicle.ignition:
+  type: string
+  enum: ["off", "accessory", "on", "start"]
+  can: <can db entry>
+  description: ignition status
+
+- vehicle.turnsignal:
+  type: branch
+  description: turn signals
+  
+- vehicle.turnsignal.left:
+  type: boolean
+  can: <can db entry>
+  description: left turn signal
+  
+- vehicle.turnsignal.right:
+  type: boolean
+  can: <can db entry>
+  description: right turn sigal
+  
+- vehicle.speed:
+  type: uint16
+  min: 0
+  max: 220
+  can: <can db entry>
+  description: vehicle speed
+  
+- vehicle.fuel:
+  type: uint8
+  min: 0
+  max: 100
+  can: <can db entry>
+  description: fuel level as percentage
+  
+- vehicle.battery:
+  type: uint8
+  min: 100
+  max: 140
+  can: <can db entry>
+  description: battery voltage in V X 10
+  
+
+- vehicle.engine:
+  type: branch
+  description: engine signals
+  
+- vehicle.engine.rpm:
+  type: uint16
+  min: 0
+  max: 100
+  can: <can db entry>
+  description: engine rpm x 100
+  
+- vehicle.engine.temperature:
+  type: uint16
+  min: 0
+  max: 120
+  can: <can db entry>
+  description: engine coolant temperature in degree C
+  
+- vehicle.engine.oilpressure:
+  type: uint16
+  min: 0
+  max: 160
+  can: <can db entry>
+  description: engine oil pressure in psi
+  
+
+- vehicle.transmission:
+  type: branch
+  description: transmission signals
+  
+- vehicle.transmission.gear:
+  type: string
+  enum: ["park", "reverse", "neutral", "drive"]
+  can: <can db entry>
+  description: gear setting

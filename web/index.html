@@ -1,0 +1,545 @@
+<!--
+--
+-- Copyright (C) 2017, Jaguar Land Rover and/or collaborators.
+--
+-- Licensed according to the terms provided by the LICENSE file.
+--
+-->
+
+
+<!doctype html>
+<html>
+<head>
+    <title>GENIVI W3C VISS Demonstration</title>
+    <script src="gauge.min.js"></script>
+    <script src="autobahn.min.js"></script>
+    <script src="vias.js"></script>
+    
+    <style>
+    	.regular {
+    		position: relative;
+    		top: 0;
+    		left: 0;
+    	}
+    	.overlay {
+    		position: absolute;
+    		top: 0;
+    		left: 0;
+    	}
+    </style>
+</head>
+
+<body background="cluster-background-5.png">
+
+<!--
+<h1 align="center">GENIVI W3C Instrument Cluster</h1>
+-->
+
+<table>
+    <tr>
+        <td><canvas id="speed-id"></canvas></td>
+	<td><table>
+		<tr>
+			<td><div style="position: relative; left: 0; top: 0;">
+				<img src="green-arrow-left-off.png" class="regular" id="turn-left-off" width="100" />
+				<img src="green-arrow-left-on.png" class="overlay" id="turn-left-on" width="100"
+				     style="visibility: hidden;" />
+			</div></td>
+			<td align="right"><div style="position: relative; left: 0; top: 0;">
+				<img src="green-arrow-right-off.png" class="regular" id="turn-right-off" width="100" />
+				<img src="green-arrow-right-on.png" class="overlay" id="turn-right-on" width="100" style="visibility: hidden; left: 50px;" />
+			</div></td>
+	    </tr>
+	    <tr>
+            <td><canvas id="battery-id" width="150" height="150"></canvas></td>
+            <td><canvas id="oil-id" width="150" height="150"></canvas></td>
+	    </tr>
+	    <tr>
+            <td><canvas id="fuel-id" width="150" height="150"></canvas></td>
+            <td><canvas id="water-id" width="150" height="150"></canvas></td>
+	    </tr>
+        <tr><td colspan="2"><table><tr>
+    	    <td style="width:70px" align="center"><div style="position: relative; left: 0; top: 0;">
+    	    	<img src="letter-p-off.png" class="regular" id="park-off" height="50" />
+    	    	<img src="letter-p-on.png" class="overlay" id="park-on" height="50" style="visibility:hidden; left: 11px;" />
+    	    </div></td>
+    	    <td style="width:70px" align="center"><div style="position: relative; left: 0; top: 0;">
+    	        <img src="letter-r-off.png" class="regular" id="reverse-off" height="50" />
+    	        <img src="letter-r-on.png" class="overlay" id="reverse-on" height="50" style="visibility:hidden; left:11px"/>
+    	    </div></td>
+    	    <td style="width:70px" align="center"><div style="position: relative; left: 0; top: 0;">
+    	        <img src="letter-n-off.png" class="regular" id="neutral-off" height="50" />
+    	        <img src="letter-n-on.png" class="overlay" id="neutral-on" height="50" style="visibility:hidden; left:11px"/>
+    	    </div></td>
+    	    <td style="width:70px" align="center"><div style="position: relative; left: 0; top: 0;">
+    	        <img src="letter-d-off.png" class="regular" id="drive-off" height="50" />
+    	        <img src="letter-d-on.png" class="overlay" id="drive-on" height="50" style="visibility:hidden; left:11px"/>
+    	    </div></td>
+        </tr></table></tr>
+	</table></td>
+        <td><canvas id="rpm-id"></canvas></td>
+    </tr>
+</table>
+</body>
+
+<script>
+
+//
+// setup gauges
+//
+var speed = new RadialGauge({
+    renderTo: 'speed-id',
+    units: 'km/h',
+    title: false,
+    width: 450,
+    height: 450,
+    value: 0,
+    minValue: 0,
+    maxValue: 220,
+    majorTicks: [
+        '0','20','40','60','80','100','120','140','160','180','200','220'
+    ],
+    minorTicks: 2,
+    strokeTicks: true,
+    highlights: [
+        { from: 0, to: 50, color: 'rgba(0,255,0,.15)' },
+        { from: 50, to: 100, color: 'rgba(255,255,0,.15)' },
+        { from: 100, to: 150, color: 'rgba(255,30,0,.25)' },
+        { from: 150, to: 200, color: 'rgba(255,0,225,.25)' },
+        { from: 200, to: 220, color: 'rgba(0,0,255,.25)' }
+    ],
+    colorPlate: '#222',
+    colorMajorTicks: '#f5f5f5',
+    colorMinorTicks: '#ddd',
+    colorTitle: '#fff',
+    colorUnits: '#ccc',
+    colorNumbers: '#eee',
+    colorNeedle: 'rgba(240, 128, 128, 1)',
+    colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+    valueBox: true,
+    animation: true,
+    animationRule: 'dequad',
+    animationDuration: 500
+});
+speed.draw();
+
+var rpm = new RadialGauge({
+    renderTo: 'rpm-id',
+    units: 'rpm x 1000',
+    title: false,
+    width: 450,
+    height: 450,
+    value: 0,
+    minValue: 0,
+    maxValue: 10,
+    majorTicks: [
+        '0','1','2','3', '4', '5','6','7','8','9','10'
+    ],
+    minorTicks: 2,
+    strokeTicks: true,
+    highlights: [
+        { from: 0, to: 7, color: 'rgba(255,255,255,.5)' },
+        { from: 7, to: 8.5, color: 'rgba(255,140,0,.5)' },
+        { from: 8.5, to: 10, color: 'rgba(255,0,0,.5)' }
+    ],
+    colorPlate: '#222',
+    colorMajorTicks: '#f5f5f5',
+    colorMinorTicks: '#ddd',
+    colorTitle: '#fff',
+    colorUnits: '#ccc',
+    colorNumbers: '#eee',
+    colorNeedle: 'rgba(240, 128, 128, 1)',
+    colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+    valueBox: false,
+    animation: true,
+    animationRule: 'dequad',
+    animationDuration: 500
+});
+rpm.draw();
+
+var water = new RadialGauge({
+    renderTo: 'water-id',
+    units: 'Coolant [°C]',
+    title: false,
+    width: 150,
+    height: 150,
+    value: 0,
+    minValue: 0,
+    maxValue: 120,
+    startAngle: 75,
+    ticksAngle: 210,
+    majorTicks: [
+        '0','20','40','60','80','100','120'
+    ],
+    minorTicks: 2,
+    strokeTicks: true,
+    highlights: [
+        { from: 0, to: 95, color: 'rgba(0,0,255,.5)' },
+        { from: 95, to: 120, color: 'rgba(255,0,0,.5)' }
+    ],
+    colorPlate: '#222',
+    colorMajorTicks: '#f5f5f5',
+    colorMinorTicks: '#ddd',
+    colorTitle: '#fff',
+    colorUnits: '#ccc',
+    colorNumbers: '#eee',
+    colorNeedle: 'rgba(240, 128, 128, 1)',
+    colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+    valueBox: false,
+    animation: true,
+    animationRule: 'dequad',
+    animationDuration: 500
+});
+water.draw();
+
+var fuel = new RadialGauge({
+    renderTo: 'fuel-id',
+    units: 'Fuel',
+    title: false,
+    width: 150,
+    height: 150,
+    value: 0,
+    minValue: 0,
+    maxValue: 100,
+    startAngle: 75,
+    ticksAngle: 210,
+    majorTicks: [
+        'E','F'
+    ],
+    minorTicks: 10,
+    strokeTicks: true,
+    highlights: [
+        { from: 0, to: 15, color: 'rgba(255,0,0,.5)' }
+    ],
+    colorPlate: '#222',
+    colorMajorTicks: '#f5f5f5',
+    colorMinorTicks: '#ddd',
+    colorTitle: '#fff',
+    colorUnits: '#ccc',
+    colorNumbers: '#eee',
+    colorNeedle: 'rgba(240, 128, 128, 1)',
+    colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+    valueBox: false,
+    animation: true,
+    animationRule: 'dequad',
+    animationDuration: 500
+});
+fuel.draw();
+
+var battery = new RadialGauge({
+    renderTo: 'battery-id',
+    units: 'Battery [V]',
+    title: false,
+    width: 150,
+    height: 150,
+    value: 10,
+    minValue: 10,
+    maxValue: 14,
+    startAngle: 75,
+    ticksAngle: 210,
+    majorTicks: [
+        '10','11','12','13','14'
+    ],
+    minorTicks: 2,
+    strokeTicks: true,
+    highlights: [
+        { from: 11.5, to: 12.5, color: 'rgba(0,255,0,.5)' }
+    ],
+    colorPlate: '#222',
+    colorMajorTicks: '#f5f5f5',
+    colorMinorTicks: '#ddd',
+    colorTitle: '#fff',
+    colorUnits: '#ccc',
+    colorNumbers: '#eee',
+    colorNeedle: 'rgba(240, 128, 128, 1)',
+    colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+    valueBox: false,
+    animation: true,
+    animationRule: 'dequad',
+    animationDuration: 500
+});
+battery.draw();
+
+var oil = new RadialGauge({
+    renderTo: 'oil-id',
+    units: 'Oil Pressure [PSI]',
+    title: false,
+    width: 150,
+    height: 150,
+    value: 0,
+    minValue: 0,
+    maxValue: 160,
+    startAngle: 75,
+    ticksAngle: 210,
+    majorTicks: [
+        '0','20','40','60','80','100', '120', '140', '160'
+    ],
+    minorTicks: 2,
+    strokeTicks: true,
+    highlights: [
+        { from: 0, to: 160, color: 'rgba(255,255,255,.5)' }
+    ],
+    colorPlate: '#222',
+    colorMajorTicks: '#f5f5f5',
+    colorMinorTicks: '#ddd',
+    colorTitle: '#fff',
+    colorUnits: '#ccc',
+    colorNumbers: '#eee',
+    colorNeedle: 'rgba(240, 128, 128, 1)',
+    colorNeedleEnd: 'rgba(255, 160, 122, .9)',
+    valueBox: false,
+    animation: true,
+    animationRule: 'dequad',
+    animationDuration: 500
+});
+oil.draw();
+
+//
+// blink an element
+//
+function blinkId(id, options) {
+	var i = document.getElementById(id);
+	if (options.run == true) {
+	    if(i.style.visibility=='hidden') {
+		    i.style.visibility='visible';
+	    } else {
+		    i.style.visibility='hidden';
+	    }
+        setTimeout(function() {
+        	blinkId(id, options);
+        }, options.interval);
+	    return true;
+	}
+	else {
+		i.style.visibility='hidden';
+		return true;
+	}
+}
+
+
+//
+// predrive check function
+//
+function predrive() {
+    var options = {run: true, interval: 500};
+    
+    speed.value = speed.options.maxValue;
+    rpm.value = rpm.options.maxValue;
+    water.value = water.options.maxValue;
+    oil.value = oil.options.maxValue;
+    battery.value = battery.options.maxValue;
+    fuel.value = fuel.options.maxValue;
+    blinkId('turn-left-on', options);
+    blinkId('turn-right-on', options);
+    blinkId('park-on', options);
+    blinkId('reverse-on', options);
+    blinkId('neutral-on', options);
+    blinkId('drive-on', options);
+    setTimeout(function() {
+        speed.value = speed.options.minValue;
+        rpm.value = rpm.options.minValue;
+        water.value = water.options.minValue;
+        oil.value = oil.options.minValue;
+        battery.value = battery.options.minValue;
+        fuel.value = fuel.options.minValue;
+        options.run = false;
+        onIgnition.status = "accessory";
+    }, 3000);
+}
+
+function postdrive() {
+    onTurnsignalLeft(false);
+    onTurnsignalRight(false);
+    speed.value = speed.options.minValue;
+    rpm.value = rpm.options.minValue;
+    water.value = water.options.minValue;
+    battery.value = battery.options.minValue;
+    fuel.value = fuel.options.minValue;
+    oil.value = oil.options.minValue;
+    onGearSelector("off");
+}
+
+//
+// determine the WAMP Router (Crossbar.io)
+// URL based on how this doc has been loaded
+//
+var wsuri;
+if (document.location.origin === "null" || document.location.origin === "file://") {
+    wsuri = "ws://127.0.0.1:8080/ws";
+} else {
+    wsuri = (document.location.protocol === "http:" ? "ws:" : "wss:") + "//" +
+             document.location.host + "/ws";
+}
+
+
+var visClientOptions = new VISClientOptions({
+	host: document.location.hostname,
+	protocol: "ws",
+	port: document.location.port
+});
+console.log("visurl: <" + visClientOptions.uri() + ">");
+
+var visClient = new VISClient(visClientOptions);
+
+//
+// fired when connection is established
+//
+function onConnect (session, details) {
+    console.log("Connected to realm <" + details.realm + "> with role <" + details.authrole + ">");
+
+    visClient.subscribe("vehicle.ignition", onIgnition, "");
+    visClient.subscribe("vehicle.turnsignal.left", onTurnsignalLeft, "");
+    visClient.subscribe("vehicle.turnsignal.right", onTurnsignalRight, "");
+    visClient.subscribe("vehicle.speed", onSpeed, "");
+    visClient.subscribe("vehicle.fuel", onFuel, "");
+    visClient.subscribe("vehicle.battery", onBattery, "");
+    visClient.subscribe("vehicle.engine.rpm", onRpm, "");
+    visClient.subscribe("vehicle.engine.temperature", onEngineTemperature, "");
+    visClient.subscribe("vehicle.engine.oilpressure", onEngineOilPressure, "");
+    visClient.subscribe("vehicle.transmission.gear", onGearSelector, "");
+}
+
+//
+// fired when connection was lost (or could not be established)
+//
+function onDisconnect(reason, details) {
+    console.log("Connection lost: " + reason);
+    onIgnition("off");
+}
+
+//
+// fired when signals are updated from the server
+//
+function onTurnsignalLeft(on) {
+    if (!checkIgnitionStatus()) return;
+	if ((on && !onTurnsignalLeft.options["run"]) || !on) {
+        onTurnsignalLeft.options["run"] = on;
+        blinkId('turn-left-on', onTurnsignalLeft.options);
+    }
+}
+onTurnsignalLeft.options = {run: false, interval: 500};
+
+function onTurnsignalRight(on) {
+    if (!checkIgnitionStatus()) return;
+	if ((on && !onTurnsignalRight.options["run"]) || !on) {
+        onTurnsignalRight.options["run"] = on;
+        blinkId('turn-right-on', onTurnsignalRight.options);
+    }
+}
+onTurnsignalRight.options = {run: false, interval: 500};
+
+function onSpeed(value) {
+    if (!checkIgnitionStatus()) return;
+    speed.value = value;
+}
+
+function onRpm(value) {
+    if (!checkIgnitionStatus()) return;
+	rpm.value = value / 10;
+}
+
+function onEngineTemperature(value) {
+    if (!checkIgnitionStatus()) return;
+    water.value = value;
+}
+
+function onBattery(value) {
+    if (!checkIgnitionStatus()) return;
+	battery.value = value / 10;
+}
+
+function onFuel(value) {
+    if (!checkIgnitionStatus()) return;
+	fuel.value = value;
+}
+
+function onEngineOilPressure(value) {
+    if (!checkIgnitionStatus()) return;
+	oil.value = value;
+}
+
+function onGearSelector(gear) {
+    if (!checkIgnitionStatus()) return;
+    onGearSelector.park.style.visibility = "hidden";
+    onGearSelector.reverse.style.visibility = "hidden";
+    onGearSelector.neutral.style.visibility = "hidden";
+    onGearSelector.drive.style.visibility = "hidden";
+ 	switch(gear) {
+	    case "off":
+	    case 0:
+		    break;
+		case "park":
+		case 1:
+		    onGearSelector.park.style.visibility = "visible";
+		    break;
+		case "reverse":
+		case 2:
+			onGearSelector.reverse.style.visibility = "visible";
+		    break;
+		case "neutral":
+		case 3:
+			onGearSelector.neutral.style.visibility = "visible";
+		    break;
+		case "drive":
+		case 4:
+			onGearSelector.drive.style.visibility = "visible";
+		    break;
+		default:
+		    break;
+    }
+}
+onGearSelector.park = document.getElementById('park-on');
+onGearSelector.reverse = document.getElementById('reverse-on');
+onGearSelector.neutral = document.getElementById('neutral-on');
+onGearSelector.drive = document.getElementById('drive-on');
+
+function onIgnition(status) {
+	switch(status) {
+		case "off":
+		case 0:
+            postdrive();
+		    onIgnition.status = "off";
+	        break;
+		case "accessory":
+		case 1:
+            if (onIgnition.status == "off") {
+                onIgnition.status = "predrive";
+			    predrive();
+			}
+			break;
+		case "run":
+		case 2:
+		    onIgnition.status = "run";
+		    onGearSelector("park");
+			break;
+		case "start":
+		case 3:
+		    onIgnition.status = "start";
+			break;
+		default:
+            postdrive();
+		    onIgnition.status = "off";
+			break;
+	}
+}
+
+function setIgnitionStatus(status) {
+    onIgnition.status = status;
+}
+
+function checkIgnitionStatus() {
+    return (
+       onIgnition.status == "accessory" ||
+       onIgnition.status == "run" ||
+       onIgnition.status == "start"
+    )
+}
+
+// startup
+setIgnitionStatus("off");
+visClient.connect(onConnect, onDisconnect);
+
+</script>
+
+
+</html>
