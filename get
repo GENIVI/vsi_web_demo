@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Simple wrapper for curl requests to the vehicle server
+# Usage: get <signalname>
+# E.g: get vehicle.turnsignal.left
+
+SERVERURL=http://localhost:8080/call
+
+curl -H "Content-Type: application/json" -d           \
+'{"procedure": "org.genivi.get", "args": ["'$1'"]}'   \
+$SERVERURL
+echo
+

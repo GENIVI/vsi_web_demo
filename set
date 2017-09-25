@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Simple wrapper for curl requests to the vehicle server
+# Usage: send <signalname> <value-as-text>
+# E.g: send vehicle.engine.rpm 20
+
+SERVERURL=http://localhost:8080/call
+
+set -x
+curl -H "Content-Type: application/json" -d          \
+'{"procedure": "org.genivi.set", "args": ["'$1'", "'$2'"]}'    \
+$SERVERURL
